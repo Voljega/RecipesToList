@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="css/application.css" rel="stylesheet"/>
+    <title>Recipes</title>
+</head>
+<body class="container" ng-app="recipes">
+
+<header>
+    <h1 class="text-center">Recipes To List</h1>
+
+    <h2 class="text-center">Select your recipe and place your order</h2>
+</header>
+<br>
+<br>
+
+<div ng-controller="BasketController as basketController">
+    <div ng-controller="RecipesController as recipesController">
+        <form name="recipesForm" novalidate>
+            <div class="row text-center">
+                <input type="submit" class="btn btn-primary pull-center" value="Search"
+                       ng-disabled="recipesForm.$invalid"
+                       ng-click="recipesController.getRecipes()"/>
+                <input type="submit" class="btn btn-primary pull-right"
+                       value="Basket"
+                       ng-click="basketController.showShoppingList()"
+                       ng-disabled="basketController.noproducts"
+                />
+            </div>
+        </form>
+        <br>
+
+        <div class="pull-right text-left list-group" ng-show="basketController.gotList">
+            <div class="list-group-item">
+                <b>My Shopping List :</b>
+                <ul>
+                    <br>
+                    <li ng-repeat="ingredient in basketController.shoppinglist.ingredients | orderBy:'department'">
+                        <i>{{ingredient.department}} / {{ingredient.name}} : </i>
+                        {{ingredient.quantity | number:2}} {{ingredient.unit}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <br><br>
+
+        <div ng-controller="SelectionController as selectionController">
+            <div ng-repeat="recipe in recipesController.recipes">
+                <table class="table table-striped table-hover table-condensed text-left">
+                    <tbody>
+                    <tr ng-hide="selectionController.isSelected(recipe.recipe_id)">
+                        <td><img class="small-image thumbnail" ng-src="{{'images/thumb_'+recipe.image_name}}"
+                                 ng-click="selectionController.setSelection(recipe)"/></td>
+                        <td class="text-left"><b>{{recipe.title}}</b><br><br><i>Click on pic for details</i></td>
+                    </tr>
+                    <tr ng-show="selectionController.isSelected(recipe.recipe_id)">
+                        <td><img class="small-image thumbnail" ng-src="{{'images/'+recipe.image_name}}"/></td>
+                        <td>
+                            <b>{{recipe.title}}</b>
+                            <br><br>
+                            <b>Instructions: </b>
+                            <br>{{recipe.instructions}}
+                            <br><br>
+                            <b>Ingredients: </b>
+                            <ul>
+                                <br>
+                                <li ng-repeat="ingredient in selectionController.customRecipe.ingredients">
+                                    {{ingredient.department}} / {{ingredient.name}} :
+                                    {{ingredient.quantity | number:2}} {{ingredient.unit}} <br>
+                                </li>
+                            </ul>
+                            <br>
+
+                            <form name="customRecipeForm" novalidate>
+                                <b>For <input type="number" ng-model="selectionController.customRecipe.servings"
+                                              integer required
+                                              ng-change="selectionController.calcQuantity(selectionController.customRecipe,selectionController.originalRecipe)"
+                                              size="2" maxlength="2" min="1" max="99"> guests</b> &nbsp;
+                                <input type="submit" class="btn btn-primary" value="Add meal to basket"
+                                       ng-disabled="customRecipeForm.$invalid"
+                                       ng-click="basketController.addToBasket(selectionController.customRecipe)"/>
+                                <br>
+                                <br>
+                                <alert ng-show="customRecipeForm.$valid" ng-repeat="alert in selectionController.alerts"
+                                       type="{{alert.type}}">
+                                    {{alert.msg}}
+                                </alert>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<script type="text/javascript" src="js/angular.js"></script>-->
+<script type="text/javascript" src="js/angular.min.js"></script>
+<script type="text/javascript" src="js/recipes.js"></script>
+</body>
+</html>
