@@ -1,2 +1,2 @@
 # RecipesToList
-RecipesToList POC in Angular.js
+Sample POC of a small web application using Angular.js and RestEasy
